@@ -12,6 +12,7 @@
 </head>
 <body>
 <script src="https://pixijs.download/release/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
 <script>
 
 // color palette for the app 
@@ -49,7 +50,7 @@ Promise.all([
     
     // Custom class 1 - Button Maker Extraordinaire!
     // This custom class is used to make amazing buttons with text, position, width, and height. 
-    function OneButtonPlease(text, x, y, width, height) {
+    function OneButtonPlease(text, x, y, width, height, cornerRadius) {
         let button = new PIXI.Graphics();
         // Normal Color
         let normalColor = 0x00BBD1;
@@ -59,7 +60,7 @@ Promise.all([
         function drawButton(color){
             button.clear();
             button.beginFill(color);
-            button.drawRect(0, 0, width, height);
+            button.drawRoundedRect(0, 0, width, height, cornerRadius);
             button.endFill();
         }
         
@@ -82,12 +83,6 @@ Promise.all([
         buttonText.y = (height - buttonText.height) / 2;
         button.addChild(buttonText);
 
-        // Event listener for the button
-        button.on('pointerdown', () => {
-            console.log(`${text} button clicked`);
-            // Add your logic here for what should happen when the button is clicked
-        });
-
         button.on('pointerover', () => {
             drawButton(hoverColor);
         });
@@ -98,13 +93,29 @@ Promise.all([
         return button;
     }
 
-    // Create buttons
-    let button1 = OneButtonPlease('I don\'t know', (app.screen.width/2-100), title.y+150, 200, 50);
-    let button2 = OneButtonPlease('I DO know', (app.screen.width/2-100), title.y+225, 200, 50);
+    // Cookin up some buttons
+    let button1 = OneButtonPlease('I don\'t know', (app.screen.width/2-100), title.y+150, 200, 50, 10);
+    let button2 = OneButtonPlease('I DO know', (app.screen.width/2-100), title.y+225, 200, 50, 10);
     app.stage.addChild(button1);
     app.stage.addChild(button2);
-    });
+   
 
+    //  What happens when you click
+    function makeWayfortheLab(button){
+        button.on('pointerdown', () => {
+            console.log('The lab is open');
+            // movin the title
+            gsap.to(title, {duration: 0.5, y: title.y-100, ease: "elastic.out"});
+            // movin the buttons
+            gsap.to(button1, {duration: 0.5, x: 100, ease: "elastic"});
+            gsap.to(button2, {duration: 0.5, x: 100, ease: "elastic"});
+        });
+    }
+    makeWayfortheLab(button1);
+    makeWayfortheLab(button2);
+
+
+});
 
 </script>
 </body>
