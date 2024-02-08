@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Art Prompt Generator</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #game-canvas { width: 100%; height: 100%; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Happy+Monkey&family=Indie+Flower&display=swap" rel="stylesheet">
+</head>
+<body>
+<script src="https://pixijs.download/release/pixi.min.js"></script>
+<script>
+
+// color palette for the app 
+// #00E0EA - Turquoise
+// #00BBD1 - Teal Green
+// #FFFFFF - White
+// #96A1A8- Pewter
+// #FCF8F6 - Ivory
+// Alt options - Scandal - #BEFBE7 | Burnt Sienna - #E28B49
+
+let app = new PIXI.Application({
+width: window.innerWidth, 
+height: window.innerHeight, 
+backgroundColor: '#00E0EA', 
+});
+document.body.appendChild(app.view);
+
+Promise.all([
+        document.fonts.load('10pt "Indie Flower"'),
+        document.fonts.load('10pt "Happy Monkey"')
+]).then(() => {
+        console.log('Both fonts are available');
+
+    let title = new PIXI.Text('How do you mood?', {
+        fontFamily: 'Happy Monkey',
+        fontSize: 40,
+        fill: 0xffffff,
+        align: 'center'
+    });
+    title.x = (app.screen.width - title.width) / 2;
+    title.y = 200; 
+    app.stage.addChild(title);
+
+// ---------------------CUSTOM CLASS ALERT!!!--------------------------------
+    
+    // Custom class 1 - Button Maker Extraordinaire!
+    // This custom class is used to make amazing buttons with text, position, width, and height. 
+    function OneButtonPlease(text, x, y, width, height) {
+        let button = new PIXI.Graphics();
+        // Normal Color
+        let normalColor = 0x00BBD1;
+        // Hover Color
+        let hoverColor = 0x009DAE;
+
+        function drawButton(color){
+            button.clear();
+            button.beginFill(color);
+            button.drawRect(0, 0, width, height);
+            button.endFill();
+        }
+        
+        drawButton(normalColor);
+        button.x = x;
+        button.y = y;
+        button.interactive = true;
+        button.buttonMode = true;
+
+        button.cursor = 'pointer';
+
+        // Button text
+        let buttonText = new PIXI.Text(text, {
+            fontFamily: 'Indie Flower',
+            fontSize: 18,
+            fill: 0xffffff,
+            align: 'center'
+        });
+        buttonText.x = (width - buttonText.width) / 2;
+        buttonText.y = (height - buttonText.height) / 2;
+        button.addChild(buttonText);
+
+        // Event listener for the button
+        button.on('pointerdown', () => {
+            console.log(`${text} button clicked`);
+            // Add your logic here for what should happen when the button is clicked
+        });
+
+        button.on('pointerover', () => {
+            drawButton(hoverColor);
+        });
+        button.on('pointerout', () => {
+            drawButton(normalColor);
+        });
+
+        return button;
+    }
+
+    // Create buttons
+    let button1 = OneButtonPlease('I don\'t know', (app.screen.width/2-100), title.y+150, 200, 50);
+    let button2 = OneButtonPlease('I DO know', (app.screen.width/2-100), title.y+225, 200, 50);
+    app.stage.addChild(button1);
+    app.stage.addChild(button2);
+    });
+
+
+</script>
+</body>
+</html>
