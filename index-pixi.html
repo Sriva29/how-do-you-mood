@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>How Do You Mood?</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #game-canvas { width: 100%; height: 100%; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Happy+Monkey&family=Indie+Flower&display=swap" rel="stylesheet">
+</head>
+<body>
+<script src="https://pixijs.download/release/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+
+<script type="module">
+import ButtonMakerExtraordinaire from '/scripts/ButtonMakerExtraordinaire.js';
+// import { Assets } from '/scripts/pixi.js';
+const bgColor = 0x00E0EA;
+const textColorWhite = 0xffffff;
+
+
+// // Assets.addBundle('animals', {
+//     bunny: 'images/bunny-dab.png',
+//     dog: 'images/dog-dab.png',
+//     cat: 'images/cat-dab.png',
+// });
+
+// const assets = await Assets.loadBundle('animals');
+const assetsToLoad = [
+    "images/text-ng.svg",
+    "",
+    "",
+    "",
+];
+
+const app = new PIXI.Application({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    backgroundColor: bgColor,
+    autoResize: true,
+    resolution: window.devicePixelRatio || 1,
+});
+document.body.appendChild(app.view);
+
+window.addEventListener('resize', () => {
+    app.renderer.resize(window.innerWidth, window.innerHeight);
+});
+
+function loadWebFonts() {
+    return Promise.all([
+        document.fonts.load('10pt "Indie Flower"'),
+        document.fonts.load('10pt "Happy Monkey"')
+    ]).then(() => console.log('Fonts loaded successfully.'))
+     .catch(error => console.error('Font loading error:', error));
+}
+
+// loadWebFonts().then(() => {
+//     console.log('Starting asset loading...');
+//     // Use PIXI.Loader.shared to add assets
+//     assetsToLoad.forEach(asset => PIXI.Loader.shared.add(asset));
+//     PIXI.Loader.shared.load(setupApp);
+// }).catch(error => {
+//     console.error('An error occurred while loading assets:', error);
+// });
+
+
+function setupApp() {
+    console.log('Setup App: Fonts and PIXI assets are available');
+
+    const title = new PIXI.Text('How do you mood?', {
+        fontFamily: 'Happy Monkey',
+        fontSize: 40,
+        fill: textColorWhite,
+        align: 'center'
+    });
+    title.x = (app.screen.width - title.width) / 2;
+    title.y = 200;
+    app.stage.addChild(title);
+
+    const dunno = new ButtonMakerExtraordinaire(app, 'I don\'t know', (app.screen.width / 2 - 100), title.y + 150, 200, 50, 10);
+    app.stage.addChild(dunno.button);
+    const doKnow = new ButtonMakerExtraordinaire(app, 'I DO know', (app.screen.width / 2 - 100), title.y + 225, 200, 50, 10);
+    app.stage.addChild(doKnow.button);
+}
+
+</script>
+</body>
+</html>
