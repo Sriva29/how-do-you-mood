@@ -1,19 +1,23 @@
 class ButtonMakerExtraordinaire {
     constructor(app, text, x, y, width, height, cornerRadius) {
-        this.app = app; // PIXI.Application instance
+        // Setting up the params
+        this.app = app;
         this.text = text;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.cornerRadius = cornerRadius;
-        this.normalColor = 0x00BBD1; // Teal Green
-        this.hoverColor = 0x009DAE; // Darker Teal Green
+        
+        // Hardcoding the button colors for now. Might change this to input parameters later...
+        this.normalColor = 0x00BBD1; 
+        this.hoverColor = 0x009DAE; 
+
         this.button = new PIXI.Graphics();
         this.buttonText = new PIXI.Text(text, {
-            fontFamily: 'Indie Flower',
-            fontSize: 18,
-            fill: 0xffffff, // White
+            fontFamily: 'Indie Flower', // Change to parameter later
+            fontSize: 18, // Change to parameter later
+            fill: 0xffffff, // Change to parameter later
             align: 'center'
         });
 
@@ -47,8 +51,11 @@ class ButtonMakerExtraordinaire {
         this.button.addChild(this.buttonText);
     }
 
+    // -------------------Click event handler. Also using GSAP for a little animation-------------------
     onClick() {
         console.log(`${this.text} button clicked`);
-        // Implement additional click behavior here
+        gsap.to(this.button.scale, { x: 0.9, y: 0.9, duration: 0.1, yoyo: true, repeat: 1 });
     }
 }
+
+export default ButtonMakerExtraordinaire;

@@ -13,109 +13,77 @@
 <body>
 <script src="https://pixijs.download/release/pixi.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
-<script>
 
-// color palette for the app 
-// #00E0EA - Turquoise
-// #00BBD1 - Teal Green
-// #FFFFFF - White
-// #96A1A8- Pewter
-// #FCF8F6 - Ivory
-// Alt options - Scandal - #BEFBE7 | Burnt Sienna - #E28B49
+<script type="module">
+import ButtonMakerExtraordinaire from '/scripts/ButtonMakerExtraordinaire.js';
+import { Assets } from '/scripts/pixi.js';
+const bgColor = 0x00E0EA;
+const textColorWhite = 0xffffff;
 
-let app = new PIXI.Application({
-width: window.innerWidth, 
-height: window.innerHeight, 
-backgroundColor: '#00E0EA', 
+
+Assets.addBundle('animals', {
+    bunny: 'images/bunny-dab.png',
+    dog: 'images/dog-dab.png',
+    cat: 'images/cat-dab.png',
+});
+
+const assets = await Assets.loadBundle('animals');
+const assetsToLoad = [
+    "images/text-ng.svg",
+    "",
+    "",
+    "",
+];
+
+const app = new PIXI.Application({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    backgroundColor: bgColor,
+    autoResize: true,
+    resolution: window.devicePixelRatio || 1,
 });
 document.body.appendChild(app.view);
 
-Promise.all([
+window.addEventListener('resize', () => {
+    app.renderer.resize(window.innerWidth, window.innerHeight);
+});
+
+function loadWebFonts() {
+    return Promise.all([
         document.fonts.load('10pt "Indie Flower"'),
         document.fonts.load('10pt "Happy Monkey"')
-]).then(() => {
-        console.log('Both fonts are available');
+    ]).then(() => console.log('Fonts loaded successfully.'))
+     .catch(error => console.error('Font loading error:', error));
+}
 
-    let title = new PIXI.Text('How do you mood?', {
+// loadWebFonts().then(() => {
+//     console.log('Starting asset loading...');
+//     // Use PIXI.Loader.shared to add assets
+//     assetsToLoad.forEach(asset => PIXI.Loader.shared.add(asset));
+//     PIXI.Loader.shared.load(setupApp);
+// }).catch(error => {
+//     console.error('An error occurred while loading assets:', error);
+// });
+
+
+function setupApp() {
+    console.log('Setup App: Fonts and PIXI assets are available');
+
+    const title = new PIXI.Text('How do you mood?', {
         fontFamily: 'Happy Monkey',
         fontSize: 40,
-        fill: 0xffffff,
+        fill: textColorWhite,
         align: 'center'
     });
     title.x = (app.screen.width - title.width) / 2;
-    title.y = 200; 
+    title.y = 200;
     app.stage.addChild(title);
 
-// ---------------------CUSTOM CLASS ALERT!!!--------------------------------
-    
-    // Custom class 1 - Button Maker Extraordinaire!
-    // This custom class is used to make amazing buttons with text, position, width, and height. 
-    function OneButtonPlease(text, x, y, width, height, cornerRadius) {
-        let button = new PIXI.Graphics();
-        // Normal Color
-        let normalColor = 0x00BBD1;
-        // Hover Color
-        let hoverColor = 0x009DAE;
-
-        function drawButton(color){
-            button.clear();
-            button.beginFill(color);
-            button.drawRoundedRect(0, 0, width, height, cornerRadius);
-            button.endFill();
-        }
-        
-        drawButton(normalColor);
-        button.x = x;
-        button.y = y;
-        button.interactive = true;
-        button.buttonMode = true;
-
-        button.cursor = 'pointer';
-
-        // Button text
-        let buttonText = new PIXI.Text(text, {
-            fontFamily: 'Indie Flower',
-            fontSize: 18,
-            fill: 0xffffff,
-            align: 'center'
-        });
-        buttonText.x = (width - buttonText.width) / 2;
-        buttonText.y = (height - buttonText.height) / 2;
-        button.addChild(buttonText);
-
-        button.on('pointerover', () => {
-            drawButton(hoverColor);
-        });
-        button.on('pointerout', () => {
-            drawButton(normalColor);
-        });
-
-        return button;
-    }
-
-    // Cookin up some buttons
-    let button1 = OneButtonPlease('I don\'t know', (app.screen.width/2-100), title.y+150, 200, 50, 10);
-    let button2 = OneButtonPlease('I DO know', (app.screen.width/2-100), title.y+225, 200, 50, 10);
-    app.stage.addChild(button1);
-    app.stage.addChild(button2);
-   
-
-    //  What happens when you click
-    function makeWayfortheLab(button){
-        button.on('pointerdown', () => {
-            console.log('The lab is open');
-            // movin the title
-            gsap.to(title, {duration: 0.5, y: title.y-100, ease: "elastic.out"});
-            // movin the buttons
-            gsap.to(button1, {duration: 0.5, x: 100, ease: "elastic"});
-            gsap.to(button2, {duration: 0.5, x: 100, ease: "elastic"});
-        });
-    }
-    makeWayfortheLab(button1);
-    makeWayfortheLab(button2);
-
-
-});
+    const dunno = new ButtonMakerExtraordinaire(app, 'I don\'t know', (app.screen.width / 2 - 100), title.y + 150, 200, 50, 10);
+    app.stage.addChild(dunno.button);
+    const doKnow = new ButtonMakerExtraordinaire(app, 'I DO know', (app.screen.width / 2 - 100), title.y + 225, 200, 50, 10);
+    app.stage.addChild(doKnow.button);
+}
 
 </script>
 </body>
