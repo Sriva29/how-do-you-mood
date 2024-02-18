@@ -11,65 +11,153 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Happy+Monkey&family=Indie+Flower&display=swap" rel="stylesheet">
     <script src="//cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
 </head>
 <body>
 
 <script type="module">
+// Custom class 1: ButtonMakerExtraordinaire.js
+// Used to create and animate buttons
+import ButtonMakerExtraordinaire from '/scripts/ButtonMakerExtraordinaire.js';
+// Custom class 2: ImageSelector.js
+// Used to display images for selection. Can position and animate images
+import ImageSelector from '/scripts/ImageSelector.js';
+
 class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
     }
 
     preload() {
-        // Preload your images here
-        this.load.image('bunny', 'images/bunny-dab.png');
-        this.load.image('dog', 'images/dog-dab.png');
-        this.load.image('cat', 'images/cat-dab.png');
-        // Add other assets as needed
-    }
+        const imageNames = [
+            'beach',
+            'bg-frame',
+            'blowing-bubbles',
+            'boy',
+            'bunny-dab',
+            'canvas',
+            'cat-dab',
+            'coffee',
+            'cooking',
+            'dog-dab',
+            'girl',
+            'loading',
+            'moon',
+            'mountain',
+            'party',
+            'pink',
+            'purple',
+            'quill',
+            'red',
+            'river',
+            'stars',
+            'sun',
+            'surfing',
+            'table',
+            'windmill',
+            'yellow'
+        ];
 
+        imageNames.forEach(name => {
+            this.load.image(name, `images/${name}.png`);
+        });
+    }
+    
     create() {
-        // Create your game objects here
-        this.add.text(this.cameras.main.centerX, 200, 'How do you mood?', {
+        this.title = this.add.text(this.cameras.main.centerX, 200, 'How do you mood?', {
             fontFamily: '"Happy Monkey", "Indie Flower"',
             fontSize: '40px',
             color: '#ffffff'
         }).setOrigin(0.5);
 
-        const dunnoButton = this.add.text(this.cameras.main.centerX, 350, 'I don\'t know', {
-            fontFamily: '"Happy Monkey", "Indie Flower"',
-            fontSize: '24px',
-            color: '#ffffff',
-            backgroundColor: '#000000',
-            padding: { x: 10, y: 5 },
-            borderRadius: 10
-        })
-        .setInteractive()
-        .on('pointerdown', () => this.onDunnoClick())
-        .setOrigin(0.5);
 
-        const doKnowButton = this.add.text(this.cameras.main.centerX, 425, 'I DO know', {
-            fontFamily: '"Happy Monkey", "Indie Flower"',
-            fontSize: '24px',
-            color: '#ffffff',
-            backgroundColor: '#000000',
-            padding: { x: 10, y: 5 },
-            borderRadius: 10
+
+        this.dunno = new ButtonMakerExtraordinaire(this, 'I don\'t know', this.cameras.main.centerX - 100, 350, 200, 50, 10,
+        ()=>{
+            this.handleDunnoTimes();
+        });
+        // this.doKnow = new ButtonMakerExtraordinaire(this, 'I DO know', this.cameras.main.centerX - 100, 425, 200, 50, 10);
+    }
+    
+    handleDunnoTimes() {
+        console.log('animating the title away!!!');
+        this.tweens.add({
+            targets: this.title,
+            y: -100,
+            duration: 1000,
+            ease: 'Power2'
         })
-        .setInteractive()
-        .on('pointerdown', () => this.onDoKnowClick())
-        .setOrigin(0.5);
+        this.dunno.animateButton(-500,0, 1000, 'Power2');
+        setTimeout(()=>{
+            this.title.setText('Choose an animal');
+            this.dunno.setText("Reset");
+            this.title.y = -100;
+            this.tweens.add({
+                targets: this.title,
+                y: 200,
+                duration: 1000,
+                ease: 'Power2'
+            })
+        }, 1000);
+        // After animation, activate ImageSelector to display images
+        setTimeout(() => {
+            this.title.setText('Choose an animal');
+            // Display images for selection
+            this.scene.start('QuestionsScene');
+            
+        }, 1250);
+    }
+}
+
+class QuestionsScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'QuestionsScene' });
+    }
+    
+    create() {
+        // adding the title again (create a class for this if doing it over and over later)
+        this.title = this.add.text(this.cameras.main.centerX, 200, 'Choose an animal', {
+            fontFamily: '"Happy Monkey", "Indie Flower"',
+            fontSize: '40px',
+            color: '#ffffff'
+        }).setOrigin(0.5);
+
+        // adding the button again (create a class for this if doing it over and over later)
+        this.reset = new ButtonMakerExtraordinaire(this, 'Reset', this.cameras.main.centerX - 600, 350, 200, 50, 10,
+        ()=>{
+            this.scene.start('MainScene');
+        });
+
+        console.log('QuestionsScene');
+        // Initialize ImageSelector here instead if this is the intended scene
+        const imageKeys = ['bunny-dab', 'dog-dab', 'cat-dab']; // Specify your image keys
+        this.imageSelector = new ImageSelector(this, imageKeys, (selectedKey) => {
+            console.log(`Image ${selectedKey} selected`);
+            // Handle the selection here
+        });
+        // Assuming displayImages method is corrected to manage visibility as intended
+        this.imageSelector.displayImages();
+        this.imageSelector.scaleImages(0.1);
+        this.imageSelector.pos([
+            { x: 500, y: 350 },  
+            { x: 600, y: 350 },  
+            { x: 700, y: 350 }
+        ]);
+    }
+}
+
+class ImageGenScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'ImageGenScene' });
     }
 
-    onDunnoClick() {
-        // Handle the "I don't know" button click here
-        console.log("I don't know clicked");
-    }
-
-    onDoKnowClick() {
-        // Handle the "I DO know" button click here
-        console.log("I DO know clicked");
+    create() {
+        // Initialize ImageSelector but don't display images immediately
+        const imageKeys = ['bunny-dab', 'dog-dab', 'cat-dab'];
+        this.imageSelector = new ImageSelector(this, imageKeys, (selectedKey) => {
+        console.log(`Image ${selectedKey} selected`);
+        // Handle selection (store the selection or update the UI)
+        });
+        this.imageSelector.displayImages(); // Ensure this method exists in ImageSelector to show the images
     }
 }
 
@@ -78,7 +166,7 @@ const game = new Phaser.Game({
     width: window.innerWidth,
     height: window.innerHeight,
     backgroundColor: '#00E0EA',
-    scene: [MainScene],
+    scene: [MainScene, QuestionsScene, ImageGenScene], 
     scale: {
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH
