@@ -43,9 +43,14 @@ export default class ImageSelector {
         // Find the selected image and apply a tint or highlight
         const selectedImage = this.images.find(image => image.texture.key === selectedKey);
         if (selectedImage) {
-            selectedImage.setTint(0xff0000); // Example tint
+            selectedImage.setTint(0x008291);
+             // Set tint to dark blue
+
+            // Animate the selected image to constantly wiggle
+            this.animateImage(this.images.indexOf(selectedImage), { angle: 10 }, 500, 'Sine.easeInOut', true, true);
         }
     }
+
 
     resetSelection() {
         this.selectedKey = null;
@@ -77,13 +82,19 @@ export default class ImageSelector {
     //     });
     // }
 
-    animateImage(index, properties, duration = 1000) {
+    animateImage(index, props, duration = 1000, ease = 'Power2', loop = false, rewind = false) {
         if (this.images[index]) {
             this.scene.tweens.add({
                 targets: this.images[index],
-                ...properties,
+                ...props,
                 duration: duration,
-                ease: 'Power2',
+                ease: ease,
+                loop: loop,
+                yoyo: rewind, // Reverse the animation if rewind is true
+                onComplete: () => {
+                    // Logging the final position of the image
+                    console.log(`Animation complete. Final position - x: ${this.images[index].x}, y: ${this.images[index].y}`);
+                }
             });
         }
     }
