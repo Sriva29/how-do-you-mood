@@ -98,10 +98,10 @@ class MainScene extends Phaser.Scene {
                 ease: 'Power2'
             })
         }, 1000);
-        // After animation, activate ImageSelector to display images
+        
         setTimeout(() => {
             this.title.setText('Choose an animal');
-            // Display images for selection
+            
             this.scene.start('QuestionsScene');
             
         }, 1250);
@@ -128,13 +128,13 @@ class QuestionsScene extends Phaser.Scene {
         });
 
         console.log('QuestionsScene');
-        // Initialize ImageSelector here instead if this is the intended scene
-        const imageKeys = ['bunny-dab', 'dog-dab', 'cat-dab']; // Specify your image keys
+        
+        const imageKeys = ['bunny-dab', 'dog-dab', 'cat-dab']; 
         this.imageSelector = new ImageSelector(this, imageKeys, (selectedKey) => {
             console.log(`Image ${selectedKey} selected`);
-            // Handle the selection here
+            
         });
-        // Assuming displayImages method is corrected to manage visibility as intended
+        
         this.imageSelector.displayImages();
         this.imageSelector.scaleImages(0.1);
         this.imageSelector.pos([
@@ -161,7 +161,7 @@ class ImageGenScene extends Phaser.Scene {
         const imageKeys = ['bunny-dab', 'dog-dab', 'cat-dab'];
         this.imageSelector = new ImageSelector(this, imageKeys, (selectedKey) => {
         console.log(`Image ${selectedKey} selected`);
-        // Handle selection (store the selection or update the UI)
+        
         });
         this.imageSelector.displayImages(); 
     }

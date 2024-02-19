@@ -5,7 +5,7 @@
     <title>How Do You Mood?</title>
     <style>
         body { margin: 0; overflow: hidden; }
-        canvas { width: 100%; height: 100%; display: block; }
+        canvas { display: block; }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +21,9 @@ import ButtonMakerExtraordinaire from '/scripts/ButtonMakerExtraordinaire.js';
 // Custom class 2: ImageSelector.js
 // Used to display images for selection. Can position and animate images
 import ImageSelector from '/scripts/ImageSelector.js';
+// Custom class 3: CreateTitle.js
+// Used to create and animate title
+import CreateTitle from '/scripts/CreateTitle.js';
 
 class MainScene extends Phaser.Scene {
     constructor() {
@@ -63,47 +66,49 @@ class MainScene extends Phaser.Scene {
     }
     
     create() {
-        this.title = this.add.text(this.cameras.main.centerX, 200, 'How do you mood?', {
-            fontFamily: '"Happy Monkey", "Indie Flower"',
-            fontSize: '40px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        this.title = new CreateTitle(this, "How do you mood?");
 
+        this.title.moveTo(this.cameras.main.centerX, 200);
 
+        this.createButtons();
+    }
 
-        this.dunno = new ButtonMakerExtraordinaire(this, 'I don\'t know', this.cameras.main.centerX - 100, 350, 200, 50, 10,
-        ()=>{
-            this.handleDunnoTimes();
-        });
+    createButtons(){
+        this.dunno = new ButtonMakerExtraordinaire(this, 'I don\'t know', this.cameras.main.centerX - 100, this.cameras.main.centerY, 200, 50, 10,()=>{
+                this.handleDunnoTimes();
+            });
         // this.doKnow = new ButtonMakerExtraordinaire(this, 'I DO know', this.cameras.main.centerX - 100, 425, 200, 50, 10);
     }
-    
+
     handleDunnoTimes() {
         console.log('animating the title away!!!');
-        this.tweens.add({
-            targets: this.title,
-            y: -100,
-            duration: 1000,
-            ease: 'Power2'
-        })
-        this.dunno.animateButton(-500,0, 1000, 'Power2');
+        // this.tweens.add({
+        //     targets: this.title,
+        //     y: -100,
+        //     duration: 1000,
+        //     ease: 'Power2'
+        // })
+        this.title.moveTo(this.cameras.main.centerX, 300);
+
+        this.dunno.animateButton(-700,0, 1000, 'Power2');
         setTimeout(()=>{
-            this.title.setText('Choose an animal');
-            this.dunno.setText("Reset");
-            this.title.y = -100;
-            this.tweens.add({
-                targets: this.title,
-                y: 200,
-                duration: 1000,
-                ease: 'Power2'
-            })
+            
+            this.dunno.setText("Restart");
+            // this.title.y = -100;
+            // this.tweens.add({
+            //     targets: this.title,
+            //     y: 200,
+            //     duration: 1000,
+            //     ease: 'Power2'
+            // })
+            this.title.animate({y: -200, alpha:0}, 1000, 'Power2');
         }, 1000);
         // After animation, activate ImageSelector to display images
         setTimeout(() => {
-            this.title.setText('Choose an animal');
+            // this.title.updateText('Choose an animal');
+            // this.title.animate({y: -200, alpha:1}, 1000, 'Power2');
             // Display images for selection
-            this.scene.start('QuestionsScene');
-            
+            this.scene.start('QuestionsScene');            
         }, 1250);
     }
 }
@@ -114,18 +119,14 @@ class QuestionsScene extends Phaser.Scene {
     }
     
     create() {
-        // adding the title again (create a class for this if doing it over and over later)
-        this.title = this.add.text(this.cameras.main.centerX, 200, 'Choose an animal', {
-            fontFamily: '"Happy Monkey", "Indie Flower"',
-            fontSize: '40px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+        // adding the title and button again
+        this.title = new CreateTitle(this, "Choose an animal (or don't, I am not your boss)");
 
-        // adding the button again (create a class for this if doing it over and over later)
-        this.reset = new ButtonMakerExtraordinaire(this, 'Reset', this.cameras.main.centerX - 600, 350, 200, 50, 10,
-        ()=>{
-            this.scene.start('MainScene');
-        });
+        this.title.moveTo(this.cameras.main.centerX, 300);
+        
+        this.createButtons();
 
         console.log('QuestionsScene');
         // Initialize ImageSelector here instead if this is the intended scene
@@ -136,18 +137,25 @@ class QuestionsScene extends Phaser.Scene {
         });
         // Assuming displayImages method is corrected to manage visibility as intended
         this.imageSelector.displayImages();
-        this.imageSelector.scaleImages(0.1);
+        this.imageSelector.scaleImages(0.16);
         this.imageSelector.pos([
-            { x: 700, y: 350 },  
-            { x: 800, y: 350 },  
-            { x: 900, y: 350 }
+            { x: centerX+200, y: centerY},  
+            { x: centerX+200, y: centerY},  
+            { x: centerX+200, y: centerY}
         ]);
+        console.log(this.cameras.main.centerY);
         // animate parameters: index, properties, duration, ease
-        this.imageSelector.animateImage(0, { x: 625 }, 1500, 'power2');
-        this.imageSelector.animateImage(1, { x: 725 }, 1500, 'power2');
-        this.imageSelector.animateImage(2, { x: 825 }, 1500, 'power2');
-        console.log('displaying images');
-        
+        this.imageSelector.animateImage(0, { x: centerX-200, alpha:1}, 1000, 'power2');
+        this.imageSelector.animateImage(1, { x: centerX-0, alpha:1 }, 1500, 'power3');
+        this.imageSelector.animateImage(2, { x: centerX+200, alpha:1}, 2000, 'power2');
+        console.log('displaying cute animals');
+    }
+
+    createButtons(){
+        this.restart = new ButtonMakerExtraordinaire(this, 'Restart', this.cameras.main.centerX - 800, this.cameras.main.centerY, 200, 50, 10,()=>{
+                this.scene.start('MainScene');
+            });
+        // this.doKnow = new ButtonMakerExtraordinaire(this, 'I DO know', this.cameras.main.centerX - 100, 425, 200, 50, 10);
     }
 }
 
@@ -169,14 +177,15 @@ class ImageGenScene extends Phaser.Scene {
 
 const game = new Phaser.Game({
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
-    backgroundColor: '#00E0EA',
-    scene: [MainScene, QuestionsScene, ImageGenScene], 
     scale: {
-        mode: Phaser.Scale.RESIZE,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-    }
+        mode: Phaser.Scale.FIT,
+        parent: 'phaser-example',
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 1920, // Base width
+        height: 1080, // Base height
+    },
+    backgroundColor: '#00E0EA', //cyan
+    scene: [MainScene, QuestionsScene, ImageGenScene]
 });
 </script>
 

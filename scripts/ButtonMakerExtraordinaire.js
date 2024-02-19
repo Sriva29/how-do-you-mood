@@ -12,12 +12,12 @@ export default class ButtonMakerExtraordinaire {
         this.normalColor = 0x00BBD1;
         this.hoverColor = 0x009DAE;
 
-        // Create the button graphics
+        // Creating the button
         this.button = this.scene.add.graphics();
         this.button.fillStyle(this.normalColor, 1);
         this.button.fillRoundedRect(0, 0, this.width, this.height, this.cornerRadius);
 
-        // Add the text
+        // Adding text
         this.buttonText = this.scene.add.text(this.width / 2, this.height / 2, this.text, {
             fontFamily: 'Indie Flower',
             fontSize: '18px',
@@ -25,24 +25,21 @@ export default class ButtonMakerExtraordinaire {
             align: 'center'
         }).setOrigin(0.5);
 
-        // Create a container and add the button graphics and text to it
+        // Adding both to a container
         this.container = this.scene.add.container(x, y, [this.button, this.buttonText]);
 
-        // Set the size of the container to match the button for proper interaction
+        // Setting the size of the container to match the button
         this.container.setSize(width, height);
         this.container.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Phaser.Geom.Rectangle.Contains);
 
-        // Setup event listeners on the container
+        // Setting up event listeners on the container
         this.container.on('pointerdown', () => this.onClick(), this);
         this.container.on('pointerover', () => this.drawButton(this.hoverColor));
         this.container.on('pointerout', () => this.drawButton(this.normalColor));
-
-        // Store the onClick callback
         this.onClickCallback = onClickCallback;
 
-        // After setting up the button and text in the container
-this.container.setSize(width, height); // Ensure this matches the button's visual size
-this.container.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Phaser.Geom.Rectangle.Contains);
+        this.container.setSize(width, height); 
+        this.container.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Phaser.Geom.Rectangle.Contains);
 
     }
 
@@ -50,7 +47,7 @@ this.container.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Ph
         this.button.clear();
         this.button.fillStyle(color, 1);
         this.button.fillRoundedRect(0, 0, this.width, this.height, this.cornerRadius);
-        this.button.strokeRect(0, 0, this.width, this.height); // for debugging
+        // this.button.strokeRect(0, 0, this.width, this.height); // for debugging
     }
 
     setText(text) {
@@ -59,7 +56,6 @@ this.container.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Ph
 
     onClick() {
         console.log(`${this.text} button clicked`);
-        // Execute the onClick callback if it's a function
         if (this.onClickCallback && typeof this.onClickCallback === 'function') {
             this.onClickCallback();
         }
@@ -68,7 +64,7 @@ this.container.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Ph
     animateButton(x, y, duration, ease) {
         this.scene.tweens.add({
             targets: this.container, 
-            x: this.container.x + x, // Relative to current position
+            x: this.container.x + x, 
             y: this.container.y + y,
             duration: duration,
             ease: ease

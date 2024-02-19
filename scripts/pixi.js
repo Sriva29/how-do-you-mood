@@ -31,12 +31,6 @@ var PIXI = function(exports) {
     parseXML: (xml) => new DOMParser().parseFromString(xml, "text/xml")
   }, settings = {
     /**
-     * This adapter is used to call methods that are platform dependent.
-     * For example `document.createElement` only runs on the web but fails in node environments.
-     * This allows us to support more platforms by abstracting away specific implementations per platform.
-     *
-     * By default the adapter is set to work in the browser. However you can create your own
-     * by implementing the `IAdapter` interface. See `IAdapter` for more information.
      * @name ADAPTER
      * @memberof PIXI.settings
      * @type {PIXI.IAdapter}
@@ -44,7 +38,7 @@ var PIXI = function(exports) {
      */
     ADAPTER: BrowserAdapter,
     /**
-     * Default resolution / device pixel ratio of the renderer.
+     * 
      * @static
      * @name RESOLUTION
      * @memberof PIXI.settings
