@@ -130,24 +130,29 @@ class QuestionsScene extends Phaser.Scene {
 
         console.log('QuestionsScene');
         // Initialize ImageSelector here instead if this is the intended scene
-        const imageKeys = ['bunny-dab', 'dog-dab', 'cat-dab']; // Specify your image keys
-        this.imageSelector = new ImageSelector(this, imageKeys, (selectedKey) => {
-            console.log(`Image ${selectedKey} selected`);
+        const animals = ['bunny-dab', 'dog-dab', 'cat-dab'];
+        this.animalSelector = new ImageSelector(this, animals, (selectedAnimal) => {
+            console.log(`Image ${selectedAnimal} selected`);
             // Handle the selection here
+            const promptWords = this.game.registry.get('globalState').userChoices;
+            promptWords.push(selectedAnimal);
+            console.log(promptWords);
         });
-        // Assuming displayImages method is corrected to manage visibility as intended
-        this.imageSelector.displayImages();
-        this.imageSelector.scaleImages(0.16);
-        this.imageSelector.pos([
+        
+
+
+        this.animalSelector.displayImages();
+        this.animalSelector.scaleImages(0.16);
+        this.animalSelector.pos([
             { x: centerX+200, y: centerY},  
             { x: centerX+200, y: centerY},  
             { x: centerX+200, y: centerY}
         ]);
         console.log(this.cameras.main.centerY);
         // animate parameters: index, properties, duration, ease
-        this.imageSelector.animateImage(0, { x: centerX-200, alpha:1}, 1000, 'power2');
-        this.imageSelector.animateImage(1, { x: centerX-0, alpha:1 }, 1500, 'power3');
-        this.imageSelector.animateImage(2, { x: centerX+200, alpha:1}, 2000, 'power2');
+        this.animalSelector.animateImage(0, { x: centerX-200, alpha:1}, 1000, 'power2');
+        this.animalSelector.animateImage(1, { x: centerX-0, alpha:1 }, 1500, 'power3');
+        this.animalSelector.animateImage(2, { x: centerX+200, alpha:1}, 2000, 'power2');
         console.log('displaying cute animals');
     }
 
@@ -155,7 +160,122 @@ class QuestionsScene extends Phaser.Scene {
         this.restart = new ButtonMakerExtraordinaire(this, 'Restart', this.cameras.main.centerX - 800, this.cameras.main.centerY, 200, 50, 10,()=>{
                 this.scene.start('MainScene');
             });
+
+        this.whatsNext = new ButtonMakerExtraordinaire(this, 'What\'s next?', this.cameras.main.centerX+50, this.cameras.main.centerY+100, 200, 50, 10,()=>{
+                this.chooseBackground(this.game.registry.get('globalState').userChoices);
+            });
+        this.whatsNext.animateButton(0, 100, 1000, 'Power2');
+        this.chooseNone = new ButtonMakerExtraordinaire(this, 'Choose None', this.cameras.main.centerX - 250, this.cameras.main.centerY+100, 200, 50, 10,()=>{
+                this.chooseBackground(null);
+            });
+        this.whatsNext.animateButton(0, 100, 1500, 'Bounce');
+        this.chooseNone.animateButton(0, 100, 1500, 'Bounce');
         // this.doKnow = new ButtonMakerExtraordinaire(this, 'I DO know', this.cameras.main.centerX - 100, 425, 200, 50, 10);
+    }
+
+    chooseBackground(previousChoice){
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+        this.title.moveTo(this.cameras.main.centerX, 400);
+        setTimeout(()=>{
+            this.title.animate({y: -200, alpha:0}, 1000, 'Power2');
+        }, 1000);
+        
+        setTimeout(()=>{
+            this.title.animate({y: 300, alpha:1}, 1000, 'Power2');
+            this.title.updateText('Choose a background');
+            this.animalSelector.animateImage(0, { x: -200, alpha:0}, 500, 'power5');
+            this.animalSelector.animateImage(1, { x: -200, alpha:0 }, 550, 'power5');
+            this.animalSelector.animateImage(2, { x:-200, alpha:0}, 600, 'power5');
+            setTimeout(()=>{this.animalSelector.clearImages();}, 1100); 
+        }, 1250);
+        console.log('choosing background');
+
+        this.whatsNext.clear();
+        this.chooseNone.clear();
+        this.whatsNext = new ButtonMakerExtraordinaire(this, 'What\'s next?', this.cameras.main.centerX+50, this.cameras.main.centerY+200, 200, 50, 10,()=>{
+                this.chooseAction(this.game.registry.get('globalState').userChoices);
+            });
+        this.chooseNone = new ButtonMakerExtraordinaire(this, 'Choose None', this.cameras.main.centerX - 250, this.cameras.main.centerY+200, 200, 50, 10,()=>{
+                this.chooseAction(null);
+            });
+
+        setTimeout(() => {
+            const backgrounds = ['beach', 'mountain', 'river'];
+            this.backgroundSelector = new ImageSelector(this, backgrounds, (selectedBackground) => {
+            console.log(`Image ${selectedBackground} selected`);
+            // Handle the selection here
+            const promptWords = this.game.registry.get('globalState').userChoices;
+            promptWords.push(selectedBackground);
+            console.log(promptWords);
+            });
+            this.backgroundSelector.displayImages();
+            this.backgroundSelector.scaleImages(0.19);
+            this.backgroundSelector.pos([
+                { x: centerX+200, y: centerY},  
+                { x: centerX+200, y: centerY},  
+                { x: centerX+200, y: centerY}
+            ]);
+            // animate parameters: index, properties, duration, ease
+            this.backgroundSelector.animateImage(0, { x: centerX-250, alpha:1}, 1000, 'power2');
+            this.backgroundSelector.animateImage(1, { x: centerX-0, alpha:1 }, 1500, 'power3');
+            this.backgroundSelector.animateImage(2, { x: centerX+200, alpha:1}, 2000, 'power2');
+        }, 1300);
+    }
+
+    chooseAction(chosenAction){
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+        this.title.moveTo(this.cameras.main.centerX, 500);
+        setTimeout(()=>{
+            this.title.animate({y: -200, alpha:0}, 1000, 'Power2');
+        }, 1000);
+        
+        setTimeout(()=>{
+            this.title.animate({y: 300, alpha:1}, 1000, 'Power2');
+            this.title.updateText('Choose an action');
+            this.backgroundSelector.animateImage(0, { x: -200, alpha:0}, 500, 'power5');
+            this.backgroundSelector.animateImage(1, { x: -200, alpha:0 }, 550, 'power5');
+            this.backgroundSelector.animateImage(2, { x:-200, alpha:0}, 600, 'power5');
+            setTimeout(()=>{this.backgroundSelector.clearImages();}, 1100); 
+        }, 1250);
+        console.log('choosing action');
+
+        this.whatsNext.clear();
+        this.chooseNone.clear();
+        this.whatsNext = new ButtonMakerExtraordinaire(this, 'What\'s next?', this.cameras.main.centerX+50, this.cameras.main.centerY+200, 200, 50, 10,()=>{
+                this.scene.start('ImageGenScene');
+            });
+        this.chooseNone = new ButtonMakerExtraordinaire(this, 'Choose None', this.cameras.main.centerX - 250, this.cameras.main.centerY+200, 200, 50, 10,()=>{
+                this.scene.start('ImageGenScene');
+            });
+
+        setTimeout(() => {
+            const actions = ['blowing-bubbles', 'cooking', 'surfing', 'party', 'coffee'];
+            this.actionSelector = new ImageSelector(this, actions, (selectedAction) => {
+            console.log(`Image ${selectedAction} selected`);
+            // Handle the selection here
+            const promptWords = this.game.registry.get('globalState').userChoices;
+            promptWords.push(selectedAction);
+            console.log(promptWords);
+            });
+            this.actionSelector.displayImages();
+            this.actionSelector.scaleImages(0.19);
+            this.actionSelector.pos([
+                { x: centerX+200, y: centerY},  
+                { x: centerX+200, y: centerY},  
+                { x: centerX+200, y: centerY},
+                { x: centerX+200, y: centerY},
+                { x: centerX+200, y: centerY}
+            ]);
+            // animate parameters: index, properties, duration, ease
+            this.actionSelector.animateImage(0, { x: centerX-450, alpha:1}, 1000, 'power2');
+            this.actionSelector.animateImage(1, { x: centerX-200, alpha:1 }, 1500, 'power3');
+            this.actionSelector.animateImage(2, { x: centerX+0, alpha:1}, 2000, 'power2');
+            this.actionSelector.animateImage(3, { x: centerX+200, alpha:1}, 2500, 'power2');
+            this.actionSelector.animateImage(4, { x: centerX+400, alpha:1}, 3000, 'power2');
+    }, 1300);
+
     }
 }
 
@@ -165,17 +285,50 @@ class ImageGenScene extends Phaser.Scene {
     }
 
     create() {
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+        this.title = new CreateTitle(this, "Your mood is...");
+        this.yourPrompt = new CreateTitle(this, "Your Prompt is: ");
+        this.yourPrompt.moveTo(centerX-500, centerY+500);
+        this.yourPrompt.animate({x: 200, y: 800}, 1000, 'Power2');
         
-        const imageKeys = ['bunny-dab', 'dog-dab', 'cat-dab'];
-        this.imageSelector = new ImageSelector(this, imageKeys, (selectedKey) => {
-        console.log(`Image ${selectedKey} selected`);
-        // Handle selection (store the selection or update the UI)
-        });
-        this.imageSelector.displayImages(); 
+        const gptPrompt = //get prompt from GPT-4 based on the user's choices
+
+        this.prompt = new CreateTitle(this, gptPrompt);
+        this.title.moveTo(centerX, 300);
+        this.title.animate({y: 200}, 1000, 'Power2');
+
+        const userChoices = this.game.registry.get('globalState').userChoices;
+        console.log(userChoices);
+        
+
+        // Need to generate the image based on the user's choices using Dall E API
+        
+        // const moodImage = userChoices[0];
+
+        // const mood = this.add.image(centerX, centerY, moodImage);
+        // mood.setScale(0.5);
+        // mood.setAlpha(0);
+        // mood.setDepth(1);
+        // mood.setTint(0x00E0EA);
+        // mood.setAngle(45);
+        // mood.setOrigin(0.5, 0.5);
+        // mood.setInteractive();
+        // this.tweens.add({
+        //     targets: mood,
+        //     alpha: 1,
+        //     duration: 1000,
+        //     ease: 'Power2'
+        // });
+        
     }
 }
 
-const game = new Phaser.Game({
+const globalState = {
+    userChoices: []
+};
+
+const gameConfig = {
     type: Phaser.AUTO,
     scale: {
         mode: Phaser.Scale.FIT,
@@ -185,8 +338,20 @@ const game = new Phaser.Game({
         height: 1080, // Base height
     },
     backgroundColor: '#00E0EA', //cyan
-    scene: [MainScene, QuestionsScene, ImageGenScene]
-});
+    scene: [MainScene, QuestionsScene, ImageGenScene],
+    callbacks: {
+        postBoot: (game)=> {
+            game.registry.set('globalState', globalState);
+        }
+    
+    },
+    global: {
+        centerX: window.innerWidth / 2,
+        centerY: window.innerHeight / 2
+    }
+};
+
+const game = new Phaser.Game(gameConfig);
 </script>
 
 </body>

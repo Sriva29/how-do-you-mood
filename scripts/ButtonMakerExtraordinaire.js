@@ -70,4 +70,8 @@ export default class ButtonMakerExtraordinaire {
             ease: ease
         });
     }
+
+    clear() {
+        this.container.destroy();
+    }
 }

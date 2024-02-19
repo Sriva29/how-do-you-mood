@@ -98,5 +98,12 @@ export default class ImageSelector {
             this.images.forEach(image => image.setScale(scale));
         }
     }
+
+    clearImages() {
+        this.images.forEach(image => {
+            image.destroy(); 
+        });
+        this.images = []; 
+    }
     
 }
