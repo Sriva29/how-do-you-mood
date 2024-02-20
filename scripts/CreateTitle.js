@@ -2,12 +2,12 @@
 // This class is used to create a title that can be manipulated.
 // It also provides methods to animate, move, and update the title.
 export default class CreateTitle {
-    constructor(scene, text) {
+    constructor(scene, text, size = '40px') {
         this.scene = scene;
         // text object to be manipulated later
         this.textObject = scene.add.text(scene.cameras.main.centerX, scene.cameras.main.centerY - 200, text, {
             fontFamily: '"Happy Monkey", "Indie Flower"',
-            fontSize: '40px',
+            fontSize: size,
             color: '#ffffff'
         }).setOrigin(0.5);
     }

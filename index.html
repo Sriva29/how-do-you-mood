@@ -13,7 +13,6 @@
     <script src="//cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
 </head>
 <body>
-
 <script type="module">
 // Custom class 1: ButtonMakerExtraordinaire.js
 // Used to create and animate buttons
@@ -24,29 +23,30 @@ import ImageSelector from '/scripts/ImageSelector.js';
 // Custom class 3: CreateTitle.js
 // Used to create and animate title
 import CreateTitle from '/scripts/CreateTitle.js';
-
+// Custom class 4: Slider.js
+// Used to create and animate slider
+import Slider from '/scripts/Slider.js';
 class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
     }
-
     preload() {
         const imageNames = [
             'beach',
             'bg-frame',
-            'blowing-bubbles',
+            'blowing bubbles',
             'boy',
-            'bunny-dab',
+            'bunny',
             'canvas',
-            'cat-dab',
-            'coffee',
+            'cat',
+            'drinking coffee',
             'cooking',
-            'dog-dab',
+            'dog',
             'girl',
             'loading',
             'moon',
             'mountain',
-            'party',
+            'partying',
             'pink',
             'purple',
             'quill',
@@ -57,90 +57,56 @@ class MainScene extends Phaser.Scene {
             'surfing',
             'table',
             'windmill',
-            'yellow'
+            'yellow',
+            'box',
+            'text-background'
         ];
-
         imageNames.forEach(name => {
             this.load.image(name, `images/${name}.png`);
         });
     }
-    
     create() {
         this.title = new CreateTitle(this, "How do you mood?");
-
         this.title.moveTo(this.cameras.main.centerX, 200);
-
         this.createButtons();
     }
-
     createButtons(){
         this.dunno = new ButtonMakerExtraordinaire(this, 'I don\'t know', this.cameras.main.centerX - 100, this.cameras.main.centerY, 200, 50, 10,()=>{
                 this.handleDunnoTimes();
             });
-        // this.doKnow = new ButtonMakerExtraordinaire(this, 'I DO know', this.cameras.main.centerX - 100, 425, 200, 50, 10);
-    }
-
+     }
     handleDunnoTimes() {
         console.log('animating the title away!!!');
-        // this.tweens.add({
-        //     targets: this.title,
-        //     y: -100,
-        //     duration: 1000,
-        //     ease: 'Power2'
-        // })
         this.title.moveTo(this.cameras.main.centerX, 300);
-
         this.dunno.animateButton(-700,0, 1000, 'Power2');
-        setTimeout(()=>{
-            
+        setTimeout(()=>{    
             this.dunno.setText("Restart");
-            // this.title.y = -100;
-            // this.tweens.add({
-            //     targets: this.title,
-            //     y: 200,
-            //     duration: 1000,
-            //     ease: 'Power2'
-            // })
             this.title.animate({y: -200, alpha:0}, 1000, 'Power2');
         }, 1000);
-        // After animation, activate ImageSelector to display images
         setTimeout(() => {
-            // this.title.updateText('Choose an animal');
-            // this.title.animate({y: -200, alpha:1}, 1000, 'Power2');
-            // Display images for selection
             this.scene.start('QuestionsScene');            
         }, 1250);
     }
 }
-
 class QuestionsScene extends Phaser.Scene {
     constructor() {
         super({ key: 'QuestionsScene' });
     }
-    
     create() {
         const centerX = this.cameras.main.centerX;
         const centerY = this.cameras.main.centerY;
         // adding the title and button again
         this.title = new CreateTitle(this, "Choose an animal (or don't, I am not your boss)");
-
         this.title.moveTo(this.cameras.main.centerX, 300);
-        
         this.createButtons();
-
         console.log('QuestionsScene');
-        // Initialize ImageSelector here instead if this is the intended scene
-        const animals = ['bunny-dab', 'dog-dab', 'cat-dab'];
+        const animals = ['bunny', 'dog', 'cat'];
         this.animalSelector = new ImageSelector(this, animals, (selectedAnimal) => {
             console.log(`Image ${selectedAnimal} selected`);
-            // Handle the selection here
             const promptWords = this.game.registry.get('globalState').userChoices;
             promptWords.push(selectedAnimal);
             console.log(promptWords);
         });
-        
-
-
         this.animalSelector.displayImages();
         this.animalSelector.scaleImages(0.16);
         this.animalSelector.pos([
@@ -160,7 +126,6 @@ class QuestionsScene extends Phaser.Scene {
         this.restart = new ButtonMakerExtraordinaire(this, 'Restart', this.cameras.main.centerX - 800, this.cameras.main.centerY, 200, 50, 10,()=>{
                 this.scene.start('MainScene');
             });
-
         this.whatsNext = new ButtonMakerExtraordinaire(this, 'What\'s next?', this.cameras.main.centerX+50, this.cameras.main.centerY+100, 200, 50, 10,()=>{
                 this.chooseBackground(this.game.registry.get('globalState').userChoices);
             });
@@ -170,9 +135,7 @@ class QuestionsScene extends Phaser.Scene {
             });
         this.whatsNext.animateButton(0, 100, 1500, 'Bounce');
         this.chooseNone.animateButton(0, 100, 1500, 'Bounce');
-        // this.doKnow = new ButtonMakerExtraordinaire(this, 'I DO know', this.cameras.main.centerX - 100, 425, 200, 50, 10);
     }
-
     chooseBackground(previousChoice){
         const centerX = this.cameras.main.centerX;
         const centerY = this.cameras.main.centerY;
@@ -180,7 +143,6 @@ class QuestionsScene extends Phaser.Scene {
         setTimeout(()=>{
             this.title.animate({y: -200, alpha:0}, 1000, 'Power2');
         }, 1000);
-        
         setTimeout(()=>{
             this.title.animate({y: 300, alpha:1}, 1000, 'Power2');
             this.title.updateText('Choose a background');
@@ -190,7 +152,6 @@ class QuestionsScene extends Phaser.Scene {
             setTimeout(()=>{this.animalSelector.clearImages();}, 1100); 
         }, 1250);
         console.log('choosing background');
-
         this.whatsNext.clear();
         this.chooseNone.clear();
         this.whatsNext = new ButtonMakerExtraordinaire(this, 'What\'s next?', this.cameras.main.centerX+50, this.cameras.main.centerY+200, 200, 50, 10,()=>{
@@ -199,12 +160,10 @@ class QuestionsScene extends Phaser.Scene {
         this.chooseNone = new ButtonMakerExtraordinaire(this, 'Choose None', this.cameras.main.centerX - 250, this.cameras.main.centerY+200, 200, 50, 10,()=>{
                 this.chooseAction(null);
             });
-
         setTimeout(() => {
             const backgrounds = ['beach', 'mountain', 'river'];
             this.backgroundSelector = new ImageSelector(this, backgrounds, (selectedBackground) => {
             console.log(`Image ${selectedBackground} selected`);
-            // Handle the selection here
             const promptWords = this.game.registry.get('globalState').userChoices;
             promptWords.push(selectedBackground);
             console.log(promptWords);
@@ -220,17 +179,53 @@ class QuestionsScene extends Phaser.Scene {
             this.backgroundSelector.animateImage(0, { x: centerX-250, alpha:1}, 1000, 'power2');
             this.backgroundSelector.animateImage(1, { x: centerX-0, alpha:1 }, 1500, 'power3');
             this.backgroundSelector.animateImage(2, { x: centerX+200, alpha:1}, 2000, 'power2');
+            // Sliderz
+            const timeSteps = {
+                "Sunny Day": "sun",
+                "Moonlit Night": "moon",
+                "Starry Night": "stars"
+            }
+            const colorSteps = {
+                "Twarted\n Summer": "pink",
+                "Foil-covered\n Sneakers": "yellow",
+                "Retro\n Punch": "red",
+                "Everything\n Nice": "purple"
+            }
+            const time = new Slider(this, centerX - (0.7*centerX), 200, 300, timeSteps, 0.2, (stepIndex) => {
+                const timeOfDayChoices = ["Sunny Day", "Moonlit Night", "Starry Night"];
+                const selectedTimeOfDay = timeOfDayChoices[stepIndex];
+                // this.game.registry.set('globalState.timeOfDay', selectedTimeOfDay);
+                let globalState = this.game.registry.get('globalState');
+                globalState.timeOfDay = selectedTimeOfDay;
+                this.game.registry.set('globalState', globalState);
+                console.log('updated global state:', this.game.registry.get('globalState'));
+                console.log('Time of Day set to:', selectedTimeOfDay);
+            });
+            this.timeTitle = new CreateTitle(this, "Choose a time of day", 16);
+            this.timeTitle.moveTo(centerX - (0.7*centerX), 200);
+            this.timeTitle.animate({y: 300}, 1000, 'Power2');
+            this.colorTitle = new CreateTitle(this, "Choose a color palette",16);
+            this.colorTitle.moveTo(centerX+(0.7*centerX), 200);
+            this.colorTitle.animate({y: 300}, 1000, 'Power2');
+            const color = new Slider(this, centerX+(0.4*centerX), 200, 400, colorSteps, 0.1, (stepIndex) => {
+            const colorChoices = ["Twarted\n Summer", "Foil-covered\n Sneakers", "Retro\n Punch", "Everything\n Nice"];
+            const selectedColorPalette = colorChoices[stepIndex];
+            // this.game.registry.set('globalState.colorPalette', selectedColorPalette);
+            let globalState = this.game.registry.get('globalState');
+            globalState.colorPalette = selectedColorPalette;
+            this.game.registry.set('globalState', globalState);
+            console.log('updated global state:', this.game.registry.get('globalState'));
+            console.log('Color Palette set to:', selectedColorPalette);
+            });
         }, 1300);
     }
-
     chooseAction(chosenAction){
         const centerX = this.cameras.main.centerX;
         const centerY = this.cameras.main.centerY;
         this.title.moveTo(this.cameras.main.centerX, 500);
         setTimeout(()=>{
             this.title.animate({y: -200, alpha:0}, 1000, 'Power2');
-        }, 1000);
-        
+        }, 1000);   
         setTimeout(()=>{
             this.title.animate({y: 300, alpha:1}, 1000, 'Power2');
             this.title.updateText('Choose an action');
@@ -240,7 +235,6 @@ class QuestionsScene extends Phaser.Scene {
             setTimeout(()=>{this.backgroundSelector.clearImages();}, 1100); 
         }, 1250);
         console.log('choosing action');
-
         this.whatsNext.clear();
         this.chooseNone.clear();
         this.whatsNext = new ButtonMakerExtraordinaire(this, 'What\'s next?', this.cameras.main.centerX+50, this.cameras.main.centerY+200, 200, 50, 10,()=>{
@@ -249,12 +243,10 @@ class QuestionsScene extends Phaser.Scene {
         this.chooseNone = new ButtonMakerExtraordinaire(this, 'Choose None', this.cameras.main.centerX - 250, this.cameras.main.centerY+200, 200, 50, 10,()=>{
                 this.scene.start('ImageGenScene');
             });
-
         setTimeout(() => {
-            const actions = ['blowing-bubbles', 'cooking', 'surfing', 'party', 'coffee'];
+            const actions = ['blowing bubbles', 'cooking', 'surfing', 'partying', 'drinking coffee'];
             this.actionSelector = new ImageSelector(this, actions, (selectedAction) => {
             console.log(`Image ${selectedAction} selected`);
-            // Handle the selection here
             const promptWords = this.game.registry.get('globalState').userChoices;
             promptWords.push(selectedAction);
             console.log(promptWords);
@@ -274,58 +266,81 @@ class QuestionsScene extends Phaser.Scene {
             this.actionSelector.animateImage(2, { x: centerX+0, alpha:1}, 2000, 'power2');
             this.actionSelector.animateImage(3, { x: centerX+200, alpha:1}, 2500, 'power2');
             this.actionSelector.animateImage(4, { x: centerX+400, alpha:1}, 3000, 'power2');
-    }, 1300);
-
+        }, 1300);
     }
 }
-
 class ImageGenScene extends Phaser.Scene {
     constructor() {
         super({ key: 'ImageGenScene' });
     }
-
     create() {
         const centerX = this.cameras.main.centerX;
         const centerY = this.cameras.main.centerY;
         this.title = new CreateTitle(this, "Your mood is...");
-        this.yourPrompt = new CreateTitle(this, "Your Prompt is: ");
-        this.yourPrompt.moveTo(centerX-500, centerY+500);
-        this.yourPrompt.animate({x: 200, y: 800}, 1000, 'Power2');
-        
-        const gptPrompt = //get prompt from GPT-4 based on the user's choices
-
-        this.prompt = new CreateTitle(this, gptPrompt);
-        this.title.moveTo(centerX, 300);
-        this.title.animate({y: 200}, 1000, 'Power2');
-
         const userChoices = this.game.registry.get('globalState').userChoices;
-        console.log(userChoices);
-        
+        const globalState = this.game.registry.get('globalState');
+        console.log('Current global state:', globalState);
+        const prompt = this.createPromptFromChoices(globalState);
+        this.image = this.add.image(centerX+50, centerY+100, 'text-background');
+        this.image.setScale(0.7); 
+        // Making it copy-able
+        const promptElement = document.getElementById('promptText');
+        promptElement.innerText = prompt; // Set the text
+        promptElement.style.display = 'block'; // Make it visible
+        promptElement.animate({y: 1200}, 1000, 'Power2');
+        // Show the copy button and add click event listener
+        const copyBtn = document.getElementById('copyPromptBtn');
+        copyBtn.style.display = 'block'; // Make the button visible
+        copyBtn.onclick = () => {
+            this.copyPromptToClipboard(prompt);
+            copyBtn.innerText = 'Copied!';
+            copyBtn.style.background = 'rgba(0,130,145,0.8)';
+        };
+        // ----------------- Dall E API -----------------
+        // Abandoning this for now. Too much work to set up and use.
+        // fetch('http://localhost:3000/generate-image', {method: 'POST',headers: {'Content-Type': 'application/json',},body: JSON.stringify({ prompt: "Your generated prompt here" }),})
+        // .then(response => response.json())
+        // .then(data => {console.log('Generated image data:', data);
+        // this.image = this.add.image(centerX, centerY, data.image);}).catch((error) => {console.error('Error:', error);});      
+    }
+    createPromptFromChoices() {
+        const globalState = this.game.registry.get('globalState');
+        const { userChoices, timeOfDay, colorPalette } = globalState;
+        const [chosenAnimal, chosenBackground, chosenAction] = userChoices;
+        console.log('Accessing timeOfDay:', timeOfDay);
 
-        // Need to generate the image based on the user's choices using Dall E API
-        
-        // const moodImage = userChoices[0];
-
-        // const mood = this.add.image(centerX, centerY, moodImage);
-        // mood.setScale(0.5);
-        // mood.setAlpha(0);
-        // mood.setDepth(1);
-        // mood.setTint(0x00E0EA);
-        // mood.setAngle(45);
-        // mood.setOrigin(0.5, 0.5);
-        // mood.setInteractive();
-        // this.tweens.add({
-        //     targets: mood,
-        //     alpha: 1,
-        //     duration: 1000,
-        //     ease: 'Power2'
-        // });
-        
+        let paletteDescription;
+        switch (colorPalette) {
+            case "Twarted\n Summer":
+                paletteDescription = "a palette of pinks and purples (#BCECE0, #36EEE0, #F652A0, #4C5270)";
+                break;
+            case "Foil-covered\n Sneakers":
+                paletteDescription = "a palette of yellows and blues (#90ADC6, #E9EAEC, #FAD02C, #333652)";
+                break;
+            case "Retro\n Punch":
+                paletteDescription = "a palette of reds and oranges (#2FF3E0, #F8D210, #FA26A0, #F51720)";
+                break;
+            case "Everything\n Nice":
+                paletteDescription = "a palette of purples and blues (#603F8B, #B4FEE7,#A16AE8, and #FD49A0)";
+                break;
+            default:
+                paletteDescription = "a palette of calming colors";
+        }
+        return `In the style of serene traditional Japanese art, envision a ${chosenAnimal} ${chosenAction} against a\n picturesque ${chosenBackground} background. This tableau is set under ${timeOfDay}, where every \n element combines to evoke a sense of tranquil beauty. \n The palette harmonizes soothing and rich colors ${paletteDescription}, inviting the viewer into a moment of peaceful contemplation.`;
+        }
+    copyPromptToClipboard(prompt) {
+        navigator.clipboard.writeText(prompt).then(() => {
+            console.log('Prompt copied to clipboard successfully!');
+        }, (err) => {
+            console.error('Error in copying text: ', err);
+        });
     }
 }
 
 const globalState = {
-    userChoices: []
+    userChoices: [],
+    timeOfDay: '',
+    colorPalette: ''
 };
 
 const gameConfig = {
@@ -353,6 +368,42 @@ const gameConfig = {
 
 const game = new Phaser.Game(gameConfig);
 </script>
+<div id="promptText" style="display: none;"></div>
+<button id="copyPromptBtn" style="position: absolute; top: 75%; left: 50%; transform: translate(-50%, -75%); font-size: 10px; padding: 10px; font-family: 'Happy Monkey'; color: white; background: rgba(0,130,145,1); border-radius: 15px; border: none;">
+    Copy Prompt
+</button>
+<style>
+    #promptText {
+        position: absolute;
+        top: 52%;
+        left: 20%;
+        font-size: 14px;
+        color: white;
+        background: rgba(0,0,0,0.001);
+        padding: 10px;
+        border-radius: 8px;
+        font-family: 'Happy Monkey';
+    }
+
+    #copyPromptBtn {
+        position: absolute;
+        display: none;
+        top: 85%;
+        left: 50%;
+        transform: translate(-50%, -75%);
+        font-size: 10px;
+        padding: 10px;
+        font-family: 'Happy Monkey';
+        color: white;
+        background: rgba(0,130,145,1);
+        border-radius: 15px;
+        border: none;
+    }
+
+    #copyPromptBtn:hover {
+        background: rgba(0,130,145,0.8);
+    }
+</style>
 
 </body>
 </html>
