@@ -59,10 +59,12 @@ class MainScene extends Phaser.Scene {
             'windmill',
             'yellow',
             'box',
-            'text-background'
+            'text-background',
+            'loading'
         ];
         imageNames.forEach(name => {
             this.load.image(name, `images/${name}.png`);
+            this.load.image(name, `images/${name}.gif`);
         });
     }
     create() {
@@ -284,25 +286,42 @@ class ImageGenScene extends Phaser.Scene {
         this.image = this.add.image(centerX+50, centerY+100, 'text-background');
         this.image.setScale(0.7); 
         // Making it copy-able
-        const promptElement = document.getElementById('promptText');
-        promptElement.innerText = prompt; // Set the text
-        promptElement.style.display = 'block'; // Make it visible
-        promptElement.animate({y: 1200}, 1000, 'Power2');
+        // const promptElement = document.getElementById('promptText');
+        const generatedImage = document.getElementById('generatedImage');
+        generatedImage.style.display = 'block';
+        generatedImage.style.position = 'absolute';
+        generatedImage.style.top = '50%';
+        generatedImage.style.left = '50%';
+        generatedImage.style.transform = 'translate(-50%, -50%)';
+        generatedImage.style.width = '70%';
+        generatedImage.style.height = '40%';
+        generatedImage.src = 'images/loading.gif';
+        // promptElement.innerText = prompt; // Set the text
+        // promptElement.style.display = 'block'; // Make it visible
+        // promptElement.animate({y: 1200}, 1000, 'Power2');
         // Show the copy button and add click event listener
-        const copyBtn = document.getElementById('copyPromptBtn');
-        copyBtn.style.display = 'block'; // Make the button visible
-        copyBtn.onclick = () => {
-            this.copyPromptToClipboard(prompt);
-            copyBtn.innerText = 'Copied!';
-            copyBtn.style.background = 'rgba(0,130,145,0.8)';
-        };
+        // const copyBtn = document.getElementById('copyPromptBtn');
+        // copyBtn.style.display = 'block'; // Make the button visible
+        // copyBtn.onclick = () => {
+        //     this.copyPromptToClipboard(prompt);
+        //     copyBtn.innerText = 'Copied!';
+        //     copyBtn.style.background = 'rgba(0,130,145,0.8)';
+        // };
         // ----------------- Dall E API -----------------
         // Abandoning this for now. Too much work to set up and use.
-        // fetch('http://localhost:3000/generate-image', {method: 'POST',headers: {'Content-Type': 'application/json',},body: JSON.stringify({ prompt: "Your generated prompt here" }),})
-        // .then(response => response.json())
-        // .then(data => {console.log('Generated image data:', data);
-        // this.image = this.add.image(centerX, centerY, data.image);}).catch((error) => {console.error('Error:', error);});      
+        fetch('http://localhost:3001/generate-image', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ prompt: prompt})})
+            .then(response => response.json())
+            .then(data => {
+                console.log('Generated image url:', data.imageUrl);
+                // this.load.image('generatedImage', data.imageUrl);
+                generatedImage.src = data.imageUrl;
+                // this.load.once('complete', () => {
+                //     this.add.image(centerX, centerY, 'generatedImage').setScale(0.5);
+                // });
+                // this.load.start();
+            }).catch((error) => { console.error('Error:', error); });      
     }
+
     createPromptFromChoices() {
         const globalState = this.game.registry.get('globalState');
         const { userChoices, timeOfDay, colorPalette } = globalState;
@@ -372,6 +391,7 @@ const game = new Phaser.Game(gameConfig);
 <button id="copyPromptBtn" style="position: absolute; top: 75%; left: 50%; transform: translate(-50%, -75%); font-size: 10px; padding: 10px; font-family: 'Happy Monkey'; color: white; background: rgba(0,130,145,1); border-radius: 15px; border: none;">
     Copy Prompt
 </button>
+<img id="generatedImage"></img>
 <style>
     #promptText {
         position: absolute;

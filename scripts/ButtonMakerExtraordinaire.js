@@ -7,6 +7,7 @@ export default class ButtonMakerExtraordinaire {
         this.width = width;
         this.height = height;
         this.cornerRadius = cornerRadius;
+        this.onClickCallback = onClickCallback;
 
         // Colors
         this.normalColor = 0x00BBD1;
@@ -30,16 +31,13 @@ export default class ButtonMakerExtraordinaire {
 
         // Setting the size of the container to match the button
         this.container.setSize(width, height);
-        this.container.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Phaser.Geom.Rectangle.Contains);
+        this.container.setInteractive(new Phaser.Geom.Rectangle(0+width/2, 0+height/2, width, height), Phaser.Geom.Rectangle.Contains);
 
         // Setting up event listeners on the container
         this.container.on('pointerdown', () => this.onClick(), this);
         this.container.on('pointerover', () => this.drawButton(this.hoverColor));
         this.container.on('pointerout', () => this.drawButton(this.normalColor));
-        this.onClickCallback = onClickCallback;
-
-        this.container.setSize(width, height); 
-        this.container.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Phaser.Geom.Rectangle.Contains);
+        
 
     }
 
@@ -47,7 +45,7 @@ export default class ButtonMakerExtraordinaire {
         this.button.clear();
         this.button.fillStyle(color, 1);
         this.button.fillRoundedRect(0, 0, this.width, this.height, this.cornerRadius);
-        // this.button.strokeRect(0, 0, this.width, this.height); // for debugging
+        this.button.strokeRect(0, 0, this.width, this.height); // for debugging
     }
 
     setText(text) {

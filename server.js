@@ -1,12 +1,19 @@
+const OpenAI = require('openai');
+
 const express = require('express');
-const axios = require('axios');
 const cors = require('cors');
-require('dotenv').config(); // To manage environment variables
+require('dotenv').config();
+// Initialize the OpenAI API with your API key
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+
+
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
@@ -15,21 +22,20 @@ app.post('/generate-image', async (req, res) => {
     const prompt = req.body.prompt;
 
     try {
-        const response = await axios.post('https://api.openai.com/v1/images/generations', {
+        // Use the OpenAI library to generate an image
+        const response = await openai.images.generate({
+            model: "dall-e-3", // Specify the model you want to use
             prompt: prompt,
             n: 1, // Number of images to generate
-            // Add other parameters as per OpenAI's documentation
-        }, {
-            headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-                'Content-Type': 'application/json',
-            }
+            size: "1024x1024", // Image size
         });
 
-        // Respond with the generated image data
-        res.json(response.data);
+        // Extract the URL of the generated image
+        const imageUrl = response.data[0].url;
+        res.json({ imageUrl: imageUrl });
+        console.log('Image generated:', imageUrl);
     } catch (error) {
-        console.error('Error calling OpenAI API:', error);
+        console.error('Error generating image with OpenAI:', error);
         res.status(500).send('Error generating image');
     }
 });
